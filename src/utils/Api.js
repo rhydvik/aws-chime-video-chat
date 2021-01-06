@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT-0
  */
 
-const SERVER_URL = 'YOUR_SERVER_URL';
-const SERVER_REGION = 'YOUR_SERVER_REGION'
+const SERVER_URL = 'https://613n2dvqzf.execute-api.ap-south-1.amazonaws.com/Prod/';
+const SERVER_REGION = 'ap-south-1'
 
 export function createMeetingRequest(meetingName, attendeeName) {
 

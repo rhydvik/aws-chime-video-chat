@@ -10,11 +10,21 @@ import {
   Alert,
   Text
 } from 'react-native';
+import { AppearanceProvider, Appearance } from 'react-native-appearance';
+
+
 import { Login } from './containers/Login';
 import { Meeting } from './containers/Meeting';
 import { createMeetingRequest } from './utils/Api';
 import { getSDKEventEmitter, MobileSDKEvent, NativeFunction } from './utils/Bridge';
 import styles from './Style';
+import LoginPage from "./components/LoginPage";
+
+import { AuthProvider } from './providers/AuthProvider';
+import { MessagingProvider } from './providers/ChatMessagesProvider';
+import { UserPermissionProvider } from './providers/UserPermissionProvider';
+import { IdentifyProvider } from './providers/IdentityProvider';
+import Channels from './components/Channels';
 
 class App extends React.Component {
   constructor() {
@@ -24,13 +34,15 @@ class App extends React.Component {
       isInMeeting: false,
       isLoading: false,
       meetingTitle: '',
-      selfAttendeeId: ''
+      selfAttendeeId: '',
+      currentRoute: 'login',
     }
   }
 
   componentDidMount() {
+    Appearance.set({ colorScheme: 'light' });
     this.onMeetingStartSubscription = getSDKEventEmitter().addListener(MobileSDKEvent.OnMeetingStart, () => {
-      this.setState({ isInMeeting: true, isLoading: false });
+      this.setState({ currentRoute: 'meeting', isInMeeting: true, isLoading: false });
     });
 
     this.onMeetingEndSubscription = getSDKEventEmitter().addListener(MobileSDKEvent.OnMeetingEnd, () => {
@@ -65,28 +77,39 @@ class App extends React.Component {
         selfAttendeeId: meetingResponse.JoinInfo.Attendee.Attendee.AttendeeId
       })
       NativeFunction.startMeeting(meetingResponse.JoinInfo.Meeting.Meeting, meetingResponse.JoinInfo.Attendee.Attendee);
+      console.log(meetingResponse, 'meetingResponse');
     }).catch(error => {
       Alert.alert("Unable to find meeting", `There was an issue finding that meeting. The meeting may have already ended, or your authorization may have expired.\n ${error}`);
       this.setState({ isLoading: false });
     });
-  }
+  };
+
+  updateCurrentRoute = (route) => this.setState({currentRoute: route})
 
   renderRoute() {
-    if (this.state.isInMeeting) {
-      return <Meeting meetingTitle={this.state.meetingTitle} selfAttendeeId={this.state.selfAttendeeId} />;
-    } else {
-      return <Login isLoading={this.state.isLoading} onSubmit={(meetingName, userName) => this.initializeMeetingSession(meetingName, userName)} />;
-    }
+    const {currentRoute} = this.state;
+    if (currentRoute === 'login') return <LoginPage updateCurrentRoute={this.updateCurrentRoute} />;
+    if (currentRoute === 'meetingCreate') return <Login isLoading={this.state.isLoading} onSubmit={(meetingName, userName) => this.initializeMeetingSession(meetingName, userName)} />;
+    if (currentRoute === 'meeting') return <Meeting meetingTitle={this.state.meetingTitle} selfAttendeeId={this.state.selfAttendeeId} updateCurrentRoute={this.updateCurrentRoute} />;
   }
 
   render() {
     return (
-      <React.Fragment>
-        <StatusBar />
-        <SafeAreaView>
-          { this.renderRoute() }
-        </SafeAreaView>
-      </React.Fragment>
+        <AppearanceProvider>
+          <StatusBar />
+          <SafeAreaView style={{flex: 1, backgroundColor: '#EEE'}}>
+            {/*<AuthProvider>*/}
+            {/*  <IdentifyProvider>*/}
+            {/*    <MessagingProvider>*/}
+            {/*      <UserPermissionProvider>*/}
+            {/*        <Channels />*/}
+            {/*      </UserPermissionProvider>*/}
+            {/*    </MessagingProvider>*/}
+            {/*  </IdentifyProvider>*/}
+            {/*</AuthProvider>*/}
+            { this.renderRoute() }
+          </SafeAreaView>
+        </AppearanceProvider>
     );
   }
 }

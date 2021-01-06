@@ -14,8 +14,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   buttonContainer: {
+    height: 100,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 30,
@@ -24,7 +25,7 @@ const styles = StyleSheet.create({
   subtitle: {
     marginBottom: 25,
     marginTop: 10,
-    color: 'grey' 
+    color: 'grey'
   },
   videoContainer: {
     flexDirection: 'row',
@@ -37,9 +38,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden'
   },
   video: {
-    width: '45%',
-    margin: '1%',
-    aspectRatio: 16 / 9,
+    // width: '45%',
+    // margin: '1%',
+    // aspectRatio: 16 / 9,
+    flex: 1,
   },
   screenShare: {
     width: '90%',
@@ -56,8 +58,8 @@ const styles = StyleSheet.create({
     padding: 5,
     height: 30,
     backgroundColor: '#eee',
-    justifyContent: 'space-between', 
-    flexDirection: 'row',  
+    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
   attendeeMuteImage: {
     resizeMode: 'contain',
@@ -76,7 +78,8 @@ const styles = StyleSheet.create({
   meetingButton: {
     resizeMode: 'contain',
     width: 50,
-    height: 50
+    height: 50,
+    tintColor: 'white',
   }
 });
 
